@@ -5,6 +5,7 @@
         <artifactId>elastic-job-lite</artifactId>
         <version>2.1.5</version>
     </parent>
+    <groupId>com.fota</groupId>
     <artifactId>elastic-job-lite-core</artifactId>
     <name>${project.artifactId}</name>
     
