@@ -19,14 +19,9 @@ package com.dangdang.ddframe.job.lite.internal.schedule;
 
 import com.dangdang.ddframe.job.exception.JobSystemException;
 import lombok.RequiredArgsConstructor;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import org.quartz.*;
+
+import java.util.Date;
 
 /**
  * 作业调度控制器.
@@ -50,7 +45,7 @@ public final class JobScheduleController {
     public void scheduleJob(final String cron) {
         try {
             if (!scheduler.checkExists(jobDetail.getKey())) {
-                scheduler.scheduleJob(jobDetail, createTrigger(cron));
+                scheduler.scheduleJob(jobDetail, createSimpleTrigger(cron));
             }
             scheduler.start();
         } catch (final SchedulerException ex) {
@@ -65,8 +60,8 @@ public final class JobScheduleController {
      */
     public synchronized void rescheduleJob(final String cron) {
         try {
-            CronTrigger trigger = (CronTrigger) scheduler.getTrigger(TriggerKey.triggerKey(triggerIdentity));
-            if (!scheduler.isShutdown() && null != trigger && !cron.equals(trigger.getCronExpression())) {
+            SimpleTrigger trigger = (SimpleTrigger) scheduler.getTrigger(TriggerKey.triggerKey(triggerIdentity));
+            if (!scheduler.isShutdown() && null != trigger && !cron.equals(trigger.getStartTime().getTime() + ";" + trigger.getRepeatInterval())) {
                 scheduler.rescheduleJob(TriggerKey.triggerKey(triggerIdentity), createTrigger(cron));
             }
         } catch (final SchedulerException ex) {
@@ -76,6 +71,11 @@ public final class JobScheduleController {
     
     private CronTrigger createTrigger(final String cron) {
         return TriggerBuilder.newTrigger().withIdentity(triggerIdentity).withSchedule(CronScheduleBuilder.cronSchedule(cron).withMisfireHandlingInstructionDoNothing()).build();
+    }
+
+    private SimpleTrigger createSimpleTrigger(final String cron) {
+        String[] arr = cron.split(";");
+        return TriggerBuilder.newTrigger().startAt(new Date(Long.parseLong(arr[0]))).withIdentity(triggerIdentity).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(Long.parseLong(arr[1])).repeatForever().withMisfireHandlingInstructionNowWithExistingCount()).build();
     }
     
     /**
