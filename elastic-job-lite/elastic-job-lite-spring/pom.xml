@@ -10,7 +10,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.dangdang</groupId>
+            <groupId>com.fota</groupId>
             <artifactId>elastic-job-lite-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

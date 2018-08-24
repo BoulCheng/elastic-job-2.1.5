@@ -40,7 +40,7 @@
             </dependency>
             <dependency>
                 <artifactId>elastic-job-lite-core</artifactId>
-                <groupId>com.dangdang</groupId>
+                <groupId>com.fota</groupId>
                 <version>${elastic-job.version}</version>
             </dependency>
             <dependency>
