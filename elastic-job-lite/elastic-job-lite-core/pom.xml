@@ -6,7 +6,7 @@
         <version>2.1.5</version>
     </parent>
     <groupId>com.fota</groupId>
-    <artifactId>elastic-job-lite-core</artifactId>
+    <artifactId>elastic-job-lite-core-millis</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
