@@ -35,7 +35,7 @@
         <dependencies>
             <dependency>
                 <artifactId>elastic-job-common-core</artifactId>
-                <groupId>com.dangdang</groupId>
+                <groupId>com.fota</groupId>
                 <version>${elastic-job.version}</version>
             </dependency>
             <dependency>

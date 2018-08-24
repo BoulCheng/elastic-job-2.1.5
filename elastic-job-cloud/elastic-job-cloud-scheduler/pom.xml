@@ -15,7 +15,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>com.dangdang</groupId>
+            <groupId>com.fota</groupId>
             <artifactId>elastic-job-common-core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
