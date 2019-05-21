@@ -97,6 +97,8 @@ public final class ExecutionService {
     }
     
     /**
+     * /sharding/{shardingItem}/running 存在该节点则标示该分片正在执行任务
+     *
      * 判断分片项中是否还有执行中的作业.
      *
      * @param items 需要判断的分片项列表

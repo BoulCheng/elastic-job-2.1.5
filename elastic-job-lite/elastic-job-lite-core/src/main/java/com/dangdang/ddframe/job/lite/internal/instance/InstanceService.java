@@ -21,6 +21,7 @@ import com.dangdang.ddframe.job.lite.api.strategy.JobInstance;
 import com.dangdang.ddframe.job.lite.internal.server.ServerService;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import org.apache.zookeeper.CreateMode;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,10 @@ public final class InstanceService {
     }
     
     /**
+     * 节点 /instances/{@link JobInstance#jobInstanceId}
+     * 值 ""
+     * 节点类型 {@link CreateMode.EPHEMERAL}
+     *
      * 持久化作业运行实例上线相关信息.
      */
     public void persistOnline() {
@@ -66,7 +71,11 @@ public final class InstanceService {
     }
     
     /**
+     * 返回作业节点所在机器状态是可用的节点JobInstance
      * 获取可分片的作业运行实例.
+     *
+     * 作业节点JobInstance 在{@link ZookeeperRegistryCenter#getChildrenKeys} 做了排序
+     * 按 jobInstanceId 从大到小排序
      *
      * @return 可分片的作业运行实例
      */

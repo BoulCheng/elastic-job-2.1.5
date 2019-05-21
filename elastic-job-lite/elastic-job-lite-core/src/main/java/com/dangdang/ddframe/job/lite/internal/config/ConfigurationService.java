@@ -62,6 +62,10 @@ public final class ConfigurationService {
     }
     
     /**
+     *
+     * 配置信息节点  /config/
+     * 相同jobName, 类全限定名jobClass不能相同
+     *
      * 持久化分布式作业配置信息.
      * 
      * @param liteJobConfig 作业配置

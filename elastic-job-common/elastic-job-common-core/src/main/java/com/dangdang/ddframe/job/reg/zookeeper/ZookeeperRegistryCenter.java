@@ -30,6 +30,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.api.ACLProvider;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.zookeeper.CreateMode;
@@ -69,6 +70,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     @Override
     public void init() {
         log.debug("Elastic job: zookeeper registry center init, server lists is: {}.", zkConfig.getServerLists());
+        //传入了namespace
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                 .connectString(zkConfig.getServerLists())
                 .retryPolicy(new ExponentialBackoffRetry(zkConfig.getBaseSleepTimeMilliseconds(), zkConfig.getMaxRetries(), zkConfig.getMaxSleepTimeMilliseconds()))
@@ -163,7 +165,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
             return null;
         }
     }
-    
+
     @Override
     public List<String> getChildrenKeys(final String key) {
         try {
@@ -304,7 +306,15 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     public Object getRawClient() {
         return client;
     }
-    
+
+    /**
+     * 在任务启动时即 {@link JobScheduler#init()}
+     * 会为该 namespace 下的 jobName 添加一个TreeCache，从而监听 namespace/jobName 下所有节点的变动
+     *
+     * 通过 {@link TreeCache#publishEvent(TreeCacheEvent)} 通知所有的 TreeCacheListener 具体类
+     * @see
+     * @param cachePath 需加入缓存的路径
+     */
     @Override
     public void addCacheData(final String cachePath) {
         TreeCache cache = new TreeCache(client, cachePath);

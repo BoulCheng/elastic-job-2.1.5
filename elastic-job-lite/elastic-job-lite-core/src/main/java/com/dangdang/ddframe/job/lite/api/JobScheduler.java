@@ -78,7 +78,14 @@ public class JobScheduler {
                         final ElasticJobListener... elasticJobListeners) {
         this(regCenter, liteJobConfig, new JobEventBus(jobEventConfig), elasticJobListeners);
     }
-    
+
+    /**
+     * 新建任务时会 new JobInstance()并放到内存中 JobRegistry.getInstance().addJobInstance(liteJobConfig.getJobName(), new JobInstance());
+     * @param regCenter
+     * @param liteJobConfig
+     * @param jobEventBus
+     * @param elasticJobListeners
+     */
     private JobScheduler(final CoordinatorRegistryCenter regCenter, final LiteJobConfiguration liteJobConfig, final JobEventBus jobEventBus, final ElasticJobListener... elasticJobListeners) {
         JobRegistry.getInstance().addJobInstance(liteJobConfig.getJobName(), new JobInstance());
         this.liteJobConfig = liteJobConfig;

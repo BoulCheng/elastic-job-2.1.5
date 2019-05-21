@@ -78,6 +78,12 @@ public final class ShardingService {
     
     /**
      * 设置需要重新分片的标记.
+     * 如果存在这个节点 leader/sharding/necessary 则需要进行重新分片 但只有该当前节点是主节点才能进行 节点 = 任务运行应用实例
+     */
+    /**
+     * 1 在任务启动时即 {@link JobScheduler#init()}
+     * 2 分片总数更新 {@link ShardingTotalCountChangedJobListener}
+     * 3 服务变化 {@link ListenServersChangedJobListener} path以/instances开头-节点变动 或 path为 /servers/{ip}-服务器id变动
      */
     public void setReshardingFlag() {
         jobNodeStorage.createJobNodeIfNeeded(ShardingNode.NECESSARY);
@@ -98,6 +104,9 @@ public final class ShardingService {
      * <p>
      * 如果当前无可用节点则不分片.
      * </p>
+     *
+     *
+     * 本质上就是 更新节点 /sharding/{shardingItem}/instance/ 下 jobInstanceId 的值
      */
     public void shardingIfNecessary() {
         List<JobInstance> availableJobInstances = instanceService.getAvailableJobInstances();
@@ -112,6 +121,8 @@ public final class ShardingService {
         LiteJobConfiguration liteJobConfig = configService.load(false);
         int shardingTotalCount = liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount();
         log.debug("Job '{}' sharding begin.", jobName);
+
+        // 创建CreateMode.EPHEMERAL节点 /leader/sharding/processing 标示正在进行重新分片
         jobNodeStorage.fillEphemeralJobNode(ShardingNode.PROCESSING, "");
         resetShardingInfo(shardingTotalCount);
         JobShardingStrategy jobShardingStrategy = JobShardingStrategyFactory.getStrategy(liteJobConfig.getJobShardingStrategyClass());
@@ -135,7 +146,10 @@ public final class ShardingService {
     
     private void resetShardingInfo(final int shardingTotalCount) {
         for (int i = 0; i < shardingTotalCount; i++) {
+            // 删除节点 /sharding/{shardingItem}/instance
             jobNodeStorage.removeJobNodeIfExisted(ShardingNode.getInstanceNode(i));
+
+            // 新增节点 /sharding/{shardingItem}
             jobNodeStorage.createJobNodeIfNeeded(ShardingNode.ROOT + "/" + i);
         }
         int actualShardingTotalCount = jobNodeStorage.getJobNodeChildrenKeys(ShardingNode.ROOT).size();
@@ -194,12 +208,19 @@ public final class ShardingService {
         }
         return false;
     }
-    
+
     @RequiredArgsConstructor
     class PersistShardingInfoTransactionExecutionCallback implements TransactionExecutionCallback {
         
         private final Map<JobInstance, List<Integer>> shardingResults;
-        
+
+        /**
+         *             // 把对应的jobInstanceId 保存在节点 /sharding/{shardingItem}/instance/ 下
+         *             // 删除 /leader/sharding/necessary
+         *             // 删除 /leader/sharding/processing
+         * @param curatorTransactionFinal 执行事务的上下文
+         * @throws Exception
+         */
         @Override
         public void execute(final CuratorTransactionFinal curatorTransactionFinal) throws Exception {
             for (Map.Entry<JobInstance, List<Integer>> entry : shardingResults.entrySet()) {

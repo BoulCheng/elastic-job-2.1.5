@@ -21,6 +21,7 @@ import com.dangdang.ddframe.job.lite.internal.instance.InstanceNode;
 import com.dangdang.ddframe.job.lite.internal.schedule.JobRegistry;
 import com.dangdang.ddframe.job.lite.internal.storage.JobNodeStorage;
 import com.dangdang.ddframe.job.reg.base.CoordinatorRegistryCenter;
+import org.apache.zookeeper.CreateMode;
 
 import java.util.List;
 
@@ -45,6 +46,10 @@ public final class ServerService {
     }
     
     /**
+     * 节点 /servers/{ip}
+     * 值 ""
+     * 节点类型 {@link CreateMode.PERSISTENT}
+     *
      * 持久化作业服务器上线信息.
      * 
      * @param enabled 作业是否启用
@@ -56,6 +61,8 @@ public final class ServerService {
     }
     
     /**
+     * 服务器可用 且 有任务节点
+     *
      * 获取是否还有可用的作业服务器.
      * 
      * @return 是否还有可用的作业服务器

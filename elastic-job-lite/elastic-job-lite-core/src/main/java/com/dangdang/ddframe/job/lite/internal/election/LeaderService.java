@@ -47,6 +47,8 @@ public final class LeaderService {
     }
     
     /**
+     * 锁节点 /leader/election/latch
+     * /leader/election/instance
      * 选举主节点.
      */
     public void electLeader() {
@@ -76,6 +78,8 @@ public final class LeaderService {
     }
     
     /**
+     * /leader/election/instance/{jobInstanceId} 存放主节点是那个任务实例
+     *
      * 判断当前节点是否是主节点.
      *
      * @return 当前节点是否是主节点

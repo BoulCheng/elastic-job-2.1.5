@@ -40,7 +40,14 @@ public final class JobInstance {
      * 作业实例主键.
      */
     private final String jobInstanceId;
-    
+
+    /**
+     * java.lang.management.RuntimeMXBean是Java 虚拟机的运行时系统的管理接口
+     * runtimeMXBean.getName()取得的值包括两个部分：PID和hostname，两者用@连接。
+     *
+     *
+     * jobInstanceId = {ip}@-@{pid}
+     */
     public JobInstance() {
         jobInstanceId = IpUtils.getIp() + DELIMITER + ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
     }
