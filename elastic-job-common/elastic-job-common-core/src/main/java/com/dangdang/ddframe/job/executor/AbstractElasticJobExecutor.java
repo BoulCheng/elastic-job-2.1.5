@@ -93,6 +93,8 @@ public abstract class AbstractElasticJobExecutor {
     
     /**
      * 执行作业.
+     *
+     * 任务执行  通过 /sharding/{shardingItem}/instance/{jobInstanceId} 获取当前任务的作业分片
      */
     public final void execute() {
         try {

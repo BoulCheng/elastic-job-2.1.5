@@ -112,7 +112,9 @@ public final class LiteJobFacade implements JobFacade {
                 return executionContextService.getJobShardingContext(failoverShardingItems);
             }
         }
+        //  更新节点 /sharding/{shardingItem}/instance/ 下jobInstanceId 的值
         shardingService.shardingIfNecessary();
+        //  获取 /sharding/{shardingItem}/instance/{jobInstanceId} jobInstanceId等于当前执行任务的jobInstanceId 则该shardingItem分片属于当前任务
         List<Integer> shardingItems = shardingService.getLocalShardingItems();
         if (isFailover) {
             shardingItems.removeAll(failoverService.getLocalTakeOffItems());
