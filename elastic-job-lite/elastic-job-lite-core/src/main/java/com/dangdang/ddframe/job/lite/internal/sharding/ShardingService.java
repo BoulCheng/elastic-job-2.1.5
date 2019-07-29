@@ -83,7 +83,8 @@ public final class ShardingService {
     /**
      * 1 在任务启动时即 {@link JobScheduler#init()}
      * 2 分片总数更新 {@link ShardingTotalCountChangedJobListener}
-     * 3 服务变化 {@link ListenServersChangedJobListener} path以/instances开头-节点变动 或 path为 /servers/{ip}-服务器id变动
+     * 3 服务变化 {@link ListenServersChangedJobListener} path以/instances开头-节点变动 或 path为 /servers/{ip}-服务器id变动 而 /elastic-job-demo/demoSimpleJob/instances/192.168.1.180@-@1131 是临时节点 {@link InstanceService#persistOnline()}
+     *
      */
     public void setReshardingFlag() {
         jobNodeStorage.createJobNodeIfNeeded(ShardingNode.NECESSARY);
@@ -119,6 +120,9 @@ public final class ShardingService {
         }
         waitingOtherJobCompleted();
         LiteJobConfiguration liteJobConfig = configService.load(false);
+        /**
+         * 分片总数为作业配置的分片总数
+         */
         int shardingTotalCount = liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount();
         log.debug("Job '{}' sharding begin.", jobName);
 
