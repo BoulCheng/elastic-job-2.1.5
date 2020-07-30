@@ -47,8 +47,8 @@ public final class LeaderService {
     }
     
     /**
-     * 锁节点 /leader/election/latch
-     * /leader/election/instance
+     * 分布式锁(LeaderLatch) latchPath  /{jobName}/leader/election/latch
+     * 主节点信息  /{jobName}/leader/election/instance       {ip}@-@{pid}
      * 选举主节点.
      */
     public void electLeader() {

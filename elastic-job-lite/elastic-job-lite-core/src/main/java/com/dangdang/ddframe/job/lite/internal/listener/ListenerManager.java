@@ -73,6 +73,8 @@ public final class ListenerManager {
     
     /**
      * 开启所有监听器.
+     * 1. 向TreeCache注册TreeCacheListener 接受/{namespace}/{jobName} 节点变更通知
+     * 2. 客户端CuratorFramework 注册ConnectionStateListener 接受客户端连接变化通知
      */
     public void startAllListeners() {
         electionListenerManager.start();

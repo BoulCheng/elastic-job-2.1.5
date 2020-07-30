@@ -116,6 +116,7 @@ public final class SchedulerFacade {
         instanceService.persistOnline();
         shardingService.setReshardingFlag();
         monitorService.listen();
+        // TODO: 2020/7/29  
         if (!reconcileService.isRunning()) {
             reconcileService.startAsync();
         }

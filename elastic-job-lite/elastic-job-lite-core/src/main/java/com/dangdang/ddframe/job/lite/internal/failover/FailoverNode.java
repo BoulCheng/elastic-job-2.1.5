@@ -38,7 +38,7 @@ public final class FailoverNode {
     
     static final String LATCH = LEADER_ROOT + "/latch";
     
-    private static final String EXECUTION_FAILOVER = ShardingNode.ROOT + "/%s/" + FAILOVER;
+    private static final String EXECUTION_FAILOVER = ShardingNode.ROOT + "/%s/" + FAILOVER; // /sharding/%s/failover
     
     private final JobNodePath jobNodePath;
     

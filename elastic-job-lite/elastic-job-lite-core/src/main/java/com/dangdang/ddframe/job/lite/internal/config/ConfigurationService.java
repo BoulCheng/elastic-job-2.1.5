@@ -46,7 +46,7 @@ public final class ConfigurationService {
      * 读取作业配置.
      * 
      * @param fromCache 是否从缓存中读取
-     * @return 作业配置
+     * @return 作业配置 从zk注册中心读 或从 缓存读
      */
     public LiteJobConfiguration load(final boolean fromCache) {
         String result;
@@ -64,9 +64,11 @@ public final class ConfigurationService {
     /**
      *
      * 配置信息节点  /config/
-     * 相同jobName, 类全限定名jobClass不能相同
+     *
      *
      * 持久化分布式作业配置信息.
+     * 1. 先校验 相同jobName,jobClass类全限定名不能相同
+     * 2. 更新(namespace/jobName/config 存在且 overwrite为true)或新增(不存在节点namespace/jobName/config ) CreateMode.PERSISTENT namespace/jobName/config
      * 
      * @param liteJobConfig 作业配置
      */
@@ -91,7 +93,7 @@ public final class ConfigurationService {
         }
         LiteJobConfiguration result = LiteJobConfigurationGsonFactory.fromJson(jobNodeStorage.getJobNodeDataDirectly(ConfigurationNode.ROOT));
         if (null == result) {
-            // TODO 应该删除整个job node,并非仅仅删除config node
+            // 删除 namespace/jobName/config
             jobNodeStorage.removeJobNodeIfExisted(ConfigurationNode.ROOT);
         }
         return Optional.fromNullable(result);

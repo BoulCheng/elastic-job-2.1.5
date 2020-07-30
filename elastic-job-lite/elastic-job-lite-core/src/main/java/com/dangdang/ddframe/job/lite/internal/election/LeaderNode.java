@@ -33,7 +33,7 @@ public final class LeaderNode {
     
     static final String ELECTION_ROOT = ROOT + "/election";
     
-    static final String INSTANCE = ELECTION_ROOT + "/instance";
+    static final String INSTANCE = ELECTION_ROOT + "/instance"; //  /leader/election/instance
     
     static final String LATCH = ELECTION_ROOT + "/latch";
     

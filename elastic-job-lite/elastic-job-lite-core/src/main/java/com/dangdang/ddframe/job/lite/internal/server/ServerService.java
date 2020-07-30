@@ -46,12 +46,14 @@ public final class ServerService {
     }
     
     /**
-     * 节点 /servers/{ip}
+     *
+     * 服务器机器上线信息
+     * 节点 /{jobName}/servers/{ip}
      * 值 ""
      * 节点类型 {@link CreateMode.PERSISTENT}
      *
      * 持久化作业服务器上线信息.
-     * 
+     *
      * @param enabled 作业是否启用
      */
     public void persistOnline(final boolean enabled) {

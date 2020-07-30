@@ -234,6 +234,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
     @Override
     public void update(final String key, final String value) {
         try {
+            // TODO: 2020/7/27  
             client.inTransaction().check().forPath(key).and().setData().forPath(key, value.getBytes(Charsets.UTF_8)).and().commit();
         //CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -312,8 +313,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
 
     /**
      * 在任务启动时即 {@link JobScheduler#init()}
-     * 会为该 namespace 下的 jobName 添加一个TreeCache，从而监听 namespace/jobName 下所有节点的变动
-     *
+     * 会为该 namespace 下的 jobName 添加一个TreeCache，从而监听 namespace/jobName 节点本身及所有子节点的变动
      * 通过 {@link TreeCache#publishEvent(TreeCacheEvent)} 通知所有的 TreeCacheListener 具体类
      * @see
      * @param cachePath 需加入缓存的路径

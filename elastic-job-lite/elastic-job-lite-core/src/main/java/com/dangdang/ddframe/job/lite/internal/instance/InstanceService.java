@@ -44,9 +44,11 @@ public final class InstanceService {
         instanceNode = new InstanceNode(jobName);
         serverService = new ServerService(regCenter, jobName);
     }
-    
+
     /**
-     * 节点 /instances/{@link JobInstance#jobInstanceId}
+     * job作业(服务应用)实例 上线信息
+     * 节点 /{jobName}/instances/{@link JobInstance#jobInstanceId}
+     * 节点 /{jobName}/instances/{ip}@-@{pid}
      * 值 ""
      * 节点类型 {@link CreateMode.EPHEMERAL}
      *

@@ -40,7 +40,7 @@ public final class JobScheduleController {
     
     private final JobDetail jobDetail;
     
-    private final String triggerIdentity;
+    private final String triggerIdentity; // jobName
     
     /**
      * 调度作业.

@@ -61,6 +61,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
     
     /**
      * 获取是否开启失效转移.
+     * 默认未开启
      *
      * @return 是否开启失效转移
      */

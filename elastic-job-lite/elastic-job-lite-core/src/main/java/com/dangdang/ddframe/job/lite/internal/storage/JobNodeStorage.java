@@ -176,15 +176,17 @@ public final class JobNodeStorage {
             RegExceptionHandler.handleException(ex);
         }
     }
-    
+
     /**
      * 在主节点执行操作.
-     * 
+     *
      * @param latchNode 分布式锁使用的作业节点名称
      * @param callback 执行操作的回调
      */
     public void executeInLeader(final String latchNode, final LeaderExecutionCallback callback) {
-        try (LeaderLatch latch = new LeaderLatch(getClient(), jobNodePath.getFullPath(latchNode))) {
+        // Java7提供了try-with-resources机制，其类似Python中的with语句，将实现了 java.lang.AutoCloseable 接口的资源定义在 try 后面的小括号中，不管 try 块是正常结束还是异常结束，这个资源都会被自动关闭。 try 小括号里面的部分称为 try-with-resources 块。
+        // 如果 try 块和 try-with-resources 块都抛出了异常，则抛出 try 块中的异常， try-with-resources 块中的异常被忽略
+        try (LeaderLatch latch = new LeaderLatch(getClient(), jobNodePath.getFullPath(latchNode))) {//会调用 latch.close();
             latch.start();
             latch.await();
             callback.execute();
