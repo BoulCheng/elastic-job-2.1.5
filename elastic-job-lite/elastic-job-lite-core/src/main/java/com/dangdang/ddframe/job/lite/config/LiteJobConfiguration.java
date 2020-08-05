@@ -36,7 +36,7 @@ public final class LiteJobConfiguration implements JobRootConfiguration {
     
     private final JobTypeConfiguration typeConfig;
     
-    private final boolean monitorExecution;
+    private final boolean monitorExecution; // 默认为true
     
     private final int maxTimeDiffSeconds;
     

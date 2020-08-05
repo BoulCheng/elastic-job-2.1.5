@@ -58,21 +58,30 @@ public final class ShardingListenerManager extends AbstractListenerManager {
         addDataListener(new ShardingTotalCountChangedJobListener());
         addDataListener(new ListenServersChangedJobListener());
     }
-    
+
+    /**
+     * 作业总分片数变更 标示需要重新进行分片(创建Znode /leader/sharding/necessary CreateMode.PERSISTENT)
+     */
     class ShardingTotalCountChangedJobListener extends AbstractJobListener {
         
         @Override
         protected void dataChanged(final String path, final Type eventType, final String data) {
-            if (configNode.isConfigPath(path) && 0 != JobRegistry.getInstance().getCurrentShardingTotalCount(jobName)) {
+            if (configNode.isConfigPath(path) && 0 != JobRegistry.getInstance().getCurrentShardingTotalCount(jobName)) {// TODO: 2020/8/3  此处有bug
                 int newShardingTotalCount = LiteJobConfigurationGsonFactory.fromJson(data).getTypeConfig().getCoreConfig().getShardingTotalCount();
                 if (newShardingTotalCount != JobRegistry.getInstance().getCurrentShardingTotalCount(jobName)) {
                     shardingService.setReshardingFlag();
+                    //变更本地内存作业的总分片数
                     JobRegistry.getInstance().setCurrentShardingTotalCount(jobName, newShardingTotalCount);
                 }
             }
         }
     }
-    
+
+    /**
+     * 作业实例上下线 (/jobName/jobName/instances 开头的节点新增或删除) 或者 作业实例所在的服务器机器变更 (Znode /jobName/servers/{ip} )
+     *
+     * 则设置需要重新分片的标示
+     */
     class ListenServersChangedJobListener extends AbstractJobListener {
         
         @Override
@@ -81,11 +90,20 @@ public final class ShardingListenerManager extends AbstractListenerManager {
                 shardingService.setReshardingFlag();
             }
         }
-        
+
+        /**
+         * /jobName/jobName/instances 开头的节点新增或删除
+         * @param eventType
+         * @param path
+         * @return
+         */
         private boolean isInstanceChange(final Type eventType, final String path) {
             return instanceNode.isInstancePath(path) && Type.NODE_UPDATED != eventType;
         }
-        
+
+        /**
+         * Znode /jobName/servers/{ip}
+         */
         private boolean isServerChange(final String path) {
             return serverNode.isServerPath(path);
         }

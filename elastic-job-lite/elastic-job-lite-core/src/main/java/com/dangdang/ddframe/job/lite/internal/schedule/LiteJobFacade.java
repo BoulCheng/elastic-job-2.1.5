@@ -99,7 +99,10 @@ public final class LiteJobFacade implements JobFacade {
     public void registerJobCompleted(final ShardingContexts shardingContexts) {
         executionService.registerJobCompleted(shardingContexts);
         if (configService.load(true).isFailover()) {
+            // TODO: 2020/8/5 减少操作次数
+            // 标示执行完 需要运行在本作业实例的失效转移分片项集合， 移除节点 sharding/{shardingItem}/failover
             failoverService.updateFailoverComplete(shardingContexts.getShardingItemParameters().keySet());
+
         }
     }
     
@@ -107,18 +110,31 @@ public final class LiteJobFacade implements JobFacade {
     public ShardingContexts getShardingContexts() {
         boolean isFailover = configService.load(true).isFailover();
         if (isFailover) {
+            ///获取需要运行在本作业实例的失效转移分片项集合 sharding/{shardingItem}/failover 节点数据内容是 jobInstanceId的shardingItem集合
             List<Integer> failoverShardingItems = failoverService.getLocalFailoverItems();
             if (!failoverShardingItems.isEmpty()) {
+                // TODO: 2020/7/31  
+                /**
+                 * {@link LiteJobFacade#failoverIfNecessary()} 触发的作业执行和正常的作业调度执行之间的并发问题
+                 * 有可能导致正常触发的作业执行了失效转移的分片项而本次正常需要执行的作业分片项被跳过忽略
+                 *
+                 *
+                 * 只是触发了作业 但作业具体执行时处理的分片项完全是可以任意的
+                 * 失效转移触发作业和正常触发作业，它们真正执行的分片项可以相互替换
+                 */
                 return executionContextService.getJobShardingContext(failoverShardingItems);
             }
         }
-        //  更新节点 /sharding/{shardingItem}/instance/ 下jobInstanceId 的值
+        // 更新分片节点信息Znode /sharding/{shardingItem}/instance  节点数据内容 value: jobInstanceId = {ip}@-@{pid}
         shardingService.shardingIfNecessary();
-        //  获取 /sharding/{shardingItem}/instance/{jobInstanceId} jobInstanceId等于当前执行任务的jobInstanceId 则该shardingItem分片属于当前任务
+        // 获取运行在本作业实例的分片项集合.
+        // /jobName/sharding/{shardingItem}/instance Znode节点数据内容等于当前作业运行实例主键jobInstanceId 则该shardingItem分片运行在当前作业实例 遍历所有/jobName/sharding/{shardingItem}/instance 获取分片项集合.
         List<Integer> shardingItems = shardingService.getLocalShardingItems();
         if (isFailover) {
+            // 过滤 获取原本需要运行在本作业实例的被失效转移的分片集合.
             shardingItems.removeAll(failoverService.getLocalTakeOffItems());
         }
+        // 过滤 禁用的任务分片项集合
         shardingItems.removeAll(executionService.getDisabledItems(shardingItems));
         return executionContextService.getJobShardingContext(shardingItems);
     }

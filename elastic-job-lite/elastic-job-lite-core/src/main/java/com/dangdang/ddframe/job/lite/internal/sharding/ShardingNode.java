@@ -34,21 +34,21 @@ public final class ShardingNode {
     
     static final String INSTANCE_APPENDIX = "instance";
     
-    public static final String INSTANCE = ROOT + "/%s/" + INSTANCE_APPENDIX;
+    public static final String INSTANCE = ROOT + "/%s/" + INSTANCE_APPENDIX; // /sharding/%s/instance
     
     static final String RUNNING_APPENDIX = "running";
     
-    static final String RUNNING = ROOT + "/%s/" + RUNNING_APPENDIX;
+    static final String RUNNING = ROOT + "/%s/" + RUNNING_APPENDIX; //  /sharding/{shardingItem}/running
     
-    static final String MISFIRE = ROOT + "/%s/misfire";
+    static final String MISFIRE = ROOT + "/%s/misfire"; // /sharding/%s/misfire
     
-    static final String DISABLED = ROOT + "/%s/disabled";
+    static final String DISABLED = ROOT + "/%s/disabled"; // /sharding/{shardingItem}/disabled
     
-    static final String LEADER_ROOT = LeaderNode.ROOT + "/" + ROOT;
+    static final String LEADER_ROOT = LeaderNode.ROOT + "/" + ROOT; // /leader/sharding
     
-    static final String NECESSARY = LEADER_ROOT + "/necessary";
+    static final String NECESSARY = LEADER_ROOT + "/necessary"; // /leader/sharding/necessary
     
-    static final String PROCESSING = LEADER_ROOT + "/processing";
+    static final String PROCESSING = LEADER_ROOT + "/processing";//  /leader/sharding/processing
     
     private final JobNodePath jobNodePath;
     

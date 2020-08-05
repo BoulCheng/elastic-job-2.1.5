@@ -60,6 +60,7 @@ public final class ExecutionContextService {
      */
     public ShardingContexts getJobShardingContext(final List<Integer> shardingItems) {
         LiteJobConfiguration liteJobConfig = configService.load(false);
+        // 如果monitorExecution为true即监控执行 则shardingItems过滤正在执行的分片项集合 /sharding/{shardingItem}/running
         removeRunningIfMonitorExecution(liteJobConfig.isMonitorExecution(), shardingItems);
         if (shardingItems.isEmpty()) {
             return new ShardingContexts(buildTaskId(liteJobConfig, shardingItems), liteJobConfig.getJobName(), liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount(), 
@@ -92,9 +93,10 @@ public final class ExecutionContextService {
     private boolean isRunning(final int shardingItem) {
         return jobNodeStorage.isJobNodeExisted(ShardingNode.getRunningNode(shardingItem));
     }
-    
+
     private Map<Integer, String> getAssignedShardingItemParameterMap(final List<Integer> shardingItems, final Map<Integer, String> shardingItemParameterMap) {
-        Map<Integer, String> result = new HashMap<>(shardingItemParameterMap.size(), 1);
+        // TODO: 2020/7/30
+        Map<Integer, String> result = new HashMap<>(shardingItems.size(), 1);
         for (int each : shardingItems) {
             result.put(each, shardingItemParameterMap.get(each));
         }

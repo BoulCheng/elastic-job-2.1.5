@@ -24,7 +24,7 @@ import com.dangdang.ddframe.job.executor.JobFacade;
 
 /**
  * 简单作业执行器.
- * 
+ *
  * @author zhangliang
  */
 public final class SimpleJobExecutor extends AbstractElasticJobExecutor {

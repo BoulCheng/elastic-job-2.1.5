@@ -73,8 +73,11 @@ public final class InstanceService {
     }
     
     /**
-     * 返回作业节点所在机器状态是可用的节点JobInstance
+     * 返回作业节点所在机器状态是可用的所有作业节点JobInstance， 即任务作业未下线且所在的机器也未下线的所有未下线的所有节点
      * 获取可分片的作业运行实例.
+     *
+     * /{jobName}/instances/{jobInstanceId} 存在
+     * /{jobName}/servers/{ip} value不等于 ServerStatus.DISABLED.name()
      *
      * 作业节点JobInstance 在{@link ZookeeperRegistryCenter#getChildrenKeys} 做了排序
      * 按 jobInstanceId 从大到小排序

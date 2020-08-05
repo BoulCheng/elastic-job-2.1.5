@@ -296,6 +296,7 @@ public final class ZookeeperRegistryCenter implements CoordinatorRegistryCenter 
         long result = 0L;
         try {
             persist(key, "");
+            // 最后一次更新该节点的时间 mtime
             result = client.checkExists().forPath(key).getMtime();
         //CHECKSTYLE:OFF
         } catch (final Exception ex) {

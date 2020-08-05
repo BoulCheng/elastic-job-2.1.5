@@ -45,7 +45,11 @@ public final class MonitorExecutionListenerManager extends AbstractListenerManag
     public void start() {
         addDataListener(new MonitorExecutionSettingsChangedJobListener());
     }
-    
+
+    /**
+     * 配置更新 monitorExecution 被更新为  false
+     * 清除全部分片的运行状态 /sharding/{shardingItem}/running
+     */
     class MonitorExecutionSettingsChangedJobListener extends AbstractJobListener {
         
         @Override

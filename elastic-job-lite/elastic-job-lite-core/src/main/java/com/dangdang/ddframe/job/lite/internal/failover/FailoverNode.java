@@ -30,15 +30,15 @@ public final class FailoverNode {
     
     static final String FAILOVER = "failover";
     
-    static final String LEADER_ROOT = LeaderNode.ROOT + "/" + FAILOVER;
+    static final String LEADER_ROOT = LeaderNode.ROOT + "/" + FAILOVER; // /leader/failover
     
-    static final String ITEMS_ROOT = LEADER_ROOT + "/items";
+    static final String ITEMS_ROOT = LEADER_ROOT + "/items"; // /leader/failover/items
     
-    static final String ITEMS = ITEMS_ROOT + "/%s";
+    static final String ITEMS = ITEMS_ROOT + "/%s"; // /leader/failover/items/{shardingItem}
     
-    static final String LATCH = LEADER_ROOT + "/latch";
+    static final String LATCH = LEADER_ROOT + "/latch"; // /leader/failover/latch
     
-    private static final String EXECUTION_FAILOVER = ShardingNode.ROOT + "/%s/" + FAILOVER; // /sharding/%s/failover
+    private static final String EXECUTION_FAILOVER = ShardingNode.ROOT + "/%s/" + FAILOVER; // /sharding/{shardingItem}/failover [EPHEMERAL]
     
     private final JobNodePath jobNodePath;
     

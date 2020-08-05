@@ -50,17 +50,17 @@ public final class AverageAllocationJobShardingStrategy implements JobShardingSt
         if (jobInstances.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<JobInstance, List<Integer>> result = shardingAliquot(jobInstances, shardingTotalCount);
+        Map<JobInstance, List<Integer>> result = shardingAliquot(jobInstances, shardingTotalCount); // Aliquot 整除数
         addAliquant(jobInstances, shardingTotalCount, result);
         return result;
     }
     
     private Map<JobInstance, List<Integer>> shardingAliquot(final List<JobInstance> shardingUnits, final int shardingTotalCount) {
-        Map<JobInstance, List<Integer>> result = new LinkedHashMap<>(shardingTotalCount, 1);
-        int itemCountPerSharding = shardingTotalCount / shardingUnits.size();
+        Map<JobInstance, List<Integer>> result = new LinkedHashMap<>(shardingTotalCount, 1); // loadFactor = 1 避免发生扩容
+        int itemCountPerSharding = shardingTotalCount / shardingUnits.size(); 1/3
         int count = 0;
         for (JobInstance each : shardingUnits) {
-            List<Integer> shardingItems = new ArrayList<>(itemCountPerSharding + 1);
+            List<Integer> shardingItems = new ArrayList<>(itemCountPerSharding + 1); // 该方法是处理整除的 还有另一个方法处理余数  initialCapacity = itemCountPerSharding + 1 避免数组扩容
             for (int i = count * itemCountPerSharding; i < (count + 1) * itemCountPerSharding; i++) {
                 shardingItems.add(i);
             }

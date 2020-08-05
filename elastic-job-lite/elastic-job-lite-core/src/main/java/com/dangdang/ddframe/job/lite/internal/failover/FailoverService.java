@@ -57,7 +57,8 @@ public final class FailoverService {
      * @param item 崩溃的作业项
      */
     public void setCrashedFailoverFlag(final int item) {
-        if (!isFailoverAssigned(item)) {
+        if (!isFailoverAssigned(item)) { // 不存在 /sharding/{shardingItem}/failover
+            // 则新增 /leader/failover/items/{shardingItem} [PERSISTENT]
             jobNodeStorage.createJobNodeIfNeeded(FailoverNode.getItemsNode(item));
         }
     }
@@ -74,7 +75,11 @@ public final class FailoverService {
             jobNodeStorage.executeInLeader(FailoverNode.LATCH, new FailoverLeaderExecutionCallback());
         }
     }
-    
+
+    /**
+     * /leader/failover/items 存在且存在子节点且作业实例没有正在执行
+     * @return
+     */
     private boolean needFailover() {
         return jobNodeStorage.isJobNodeExisted(FailoverNode.ITEMS_ROOT) && !jobNodeStorage.getJobNodeChildrenKeys(FailoverNode.ITEMS_ROOT).isEmpty()
                 && !JobRegistry.getInstance().isJobRunning(jobName);
@@ -82,6 +87,9 @@ public final class FailoverService {
     
     /**
      * 更新执行完毕失效转移的分片项状态.
+     *
+     * 执行完毕失效转移的分片项集合
+     * /sharding/{}/failover
      * 
      * @param items 执行完毕失效转移的分片项集合
      */
@@ -92,7 +100,9 @@ public final class FailoverService {
     }
     
     /**
-     * 获取作业服务器的失效转移分片项集合.
+     * 获取需要运行在本作业实例的失效转移分片项集合.
+     *
+     * /sharding/{shardingItem}/failover 节点数据内容是 jobInstanceId的shardingItem集合
      *
      * @param jobInstanceId 作业运行实例主键
      * @return 作业失效转移的分片项集合
@@ -112,9 +122,9 @@ public final class FailoverService {
     }
     
     /**
-     * 获取运行在本作业服务器的失效转移分片项集合.
+     * 获取需要运行在本作业实例的失效转移分片项集合.
      * 
-     * @return 运行在本作业服务器的失效转移分片项集合
+     * @return 获取需要运行在本作业实例的失效转移分片项集合
      */
     public List<Integer> getLocalFailoverItems() {
         if (JobRegistry.getInstance().isShutdown(jobName)) {
@@ -124,8 +134,9 @@ public final class FailoverService {
     }
     
     /**
-     * 获取运行在本作业服务器的被失效转移的序列号.
-     * 
+     * 获取原本需要运行在本作业实例的被失效转移的分片集合.
+     *  1. /sharding/{shardingItem}/instance 节点数据内容等于 jobInstanceId 的shardingItem集合
+     *  2. /sharding/{shardingItem}/failover 存在的  shardingItem集合
      * @return 运行在本作业服务器的被失效转移的序列号
      */
     public List<Integer> getLocalTakeOffItems() {
@@ -144,10 +155,21 @@ public final class FailoverService {
      */
     public void removeFailoverInfo() {
         for (String each : jobNodeStorage.getJobNodeChildrenKeys(ShardingNode.ROOT)) {
+            // 具体作业实例的需要处理的失效转移分片项 /sharding/{shardingItem}/failover 节点的数据内容是 作业实例ID jobInstanceId
             jobNodeStorage.removeJobNodeIfExisted(FailoverNode.getExecutionFailoverNode(Integer.parseInt(each)));
+            //还应删除整个作业集群需要处理的失效转移分片项集合   /leader/failover/items/{shardingItem} [PERSISTENT] 设置失效的分片项标记.  节点的数据内容为空字符串
         }
+
+        // TODO: 2020/8/4  
     }
-    
+
+    /**
+     *
+     * 将一个失效转移分片项 /leader/failover/items/{shardingItem} 转移到该作业实例  /sharding/{shardingItem}/failover EPHEMERAL 节点数据内容为 jobInstanceId
+     * 删除一个失效转移分片项节点 /leader/failover/items/{shardingItem} 并相应的新增一个节点  /sharding/{shardingItem}/failover (EPHEMERAL) 节点数据内容为当前作业实例jobInstanceId
+     * 且立刻触发一次作业
+     *
+     */
     class FailoverLeaderExecutionCallback implements LeaderExecutionCallback {
         
         @Override

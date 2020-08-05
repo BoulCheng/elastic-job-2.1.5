@@ -57,7 +57,11 @@ public final class ElectionListenerManager extends AbstractListenerManager {
         addDataListener(new LeaderElectionJobListener());
         addDataListener(new LeaderAbdicationJobListener());
     }
-    
+
+    /**
+     * 主作业节点下线 (Znode /leader/election/instance 被删除) 其他作业节点重新执行主作业节点选举
+     * 延时是多少 todo
+     */
     class LeaderElectionJobListener extends AbstractJobListener {
         
         @Override
@@ -74,7 +78,13 @@ public final class ElectionListenerManager extends AbstractListenerManager {
         private boolean isPassiveElection(final String path, final Type eventType) {
             return isLeaderCrashed(path, eventType) && serverService.isAvailableServer(JobRegistry.getInstance().getJobInstance(jobName).getIp());
         }
-        
+
+        /**
+         * 主节点下线
+         * @param path
+         * @param eventType
+         * @return
+         */
         private boolean isLeaderCrashed(final String path, final Type eventType) {
             return leaderNode.isLeaderInstancePath(path) && Type.NODE_REMOVED == eventType;
         }
@@ -83,7 +93,11 @@ public final class ElectionListenerManager extends AbstractListenerManager {
             return serverNode.isLocalServerPath(path) && !ServerStatus.DISABLED.name().equals(data);
         }
     }
-    
+
+    /**
+     * 主作业节点所在服务器机器被标示为下线 (Znode /{jobName}/servers/{ip}  节点数据内容更改为 DISABLED )
+     * 删除主节点(/leader/election/instance)供重新选举
+     */
     class LeaderAbdicationJobListener extends AbstractJobListener {
         
         @Override

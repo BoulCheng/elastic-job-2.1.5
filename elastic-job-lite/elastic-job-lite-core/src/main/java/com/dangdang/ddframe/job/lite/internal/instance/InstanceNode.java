@@ -63,6 +63,7 @@ public final class InstanceNode {
     }
     
     boolean isLocalInstancePath(final String path) {
+        // TODO: 2020/8/4  重复代码
         return path.equals(jobNodePath.getFullPath(String.format(INSTANCES, JobRegistry.getInstance().getJobInstance(jobName).getJobInstanceId())));
     }
     

@@ -51,7 +51,12 @@ public final class ShutdownListenerManager extends AbstractListenerManager {
     public void start() {
         addDataListener(new InstanceShutdownStatusJobListener());
     }
-    
+
+    /**
+     * Znode  /{jobName}/instances/{ip}@-@{pid} 已经被删除((客户端并不是处理sessionTimeOut时间内正在进行重新连接zookeeper-server)) 当前作业节点下线关闭
+     *
+     * 终止作业调度
+     */
     class InstanceShutdownStatusJobListener extends AbstractJobListener {
         
         @Override

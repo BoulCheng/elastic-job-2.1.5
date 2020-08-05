@@ -78,7 +78,7 @@ public final class LeaderService {
     }
     
     /**
-     * /leader/election/instance/{jobInstanceId} 存放主节点是那个任务实例
+     * /leader/election/instance 节点数据内容为当前jobInstanceId
      *
      * 判断当前节点是否是主节点.
      *

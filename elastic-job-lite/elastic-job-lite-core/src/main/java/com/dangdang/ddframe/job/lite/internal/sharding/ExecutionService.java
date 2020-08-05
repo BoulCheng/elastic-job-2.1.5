@@ -97,9 +97,9 @@ public final class ExecutionService {
     }
     
     /**
-     * /sharding/{shardingItem}/running 存在该节点则标示该分片正在执行任务
+     * /sharding/{shardingItem}/running 存在该节点则标示该分片正在执行 monitorExecution
      *
-     * 判断分片项中是否还有执行中的作业.
+     * 判断分片项中是否还有执行中的作业. /{jobName}/sharding/{shardingItem}/running
      *
      * @param items 需要判断的分片项列表
      * @return 分片项中是否还有执行中的作业
@@ -190,6 +190,7 @@ public final class ExecutionService {
     /**
      * 获取禁用的任务分片项.
      *
+     * /sharding/{shardingItem}/disabled 节点存在的shardingItem集合
      * @param items 需要获取禁用的任务分片项
      * @return 禁用的任务分片项
      */

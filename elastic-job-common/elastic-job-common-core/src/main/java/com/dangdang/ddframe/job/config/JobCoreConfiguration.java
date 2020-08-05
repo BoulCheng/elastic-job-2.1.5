@@ -44,9 +44,9 @@ public final class JobCoreConfiguration {
     
     private final String jobParameter;
     
-    private final boolean failover;
+    private final boolean failover; // 默认未开启 false
     
-    private final boolean misfire;
+    private final boolean misfire; //默认开启 true
     
     private final String description;
     
