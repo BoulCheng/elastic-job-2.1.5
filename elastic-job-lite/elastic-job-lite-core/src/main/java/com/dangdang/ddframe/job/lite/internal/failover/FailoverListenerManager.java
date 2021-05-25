@@ -104,7 +104,7 @@ public final class FailoverListenerManager extends AbstractListenerManager {
                 if (jobInstanceId.equals(JobRegistry.getInstance().getJobInstance(jobName).getJobInstanceId())) {
                     return;
                 }
-                List<Integer> failoverItems = failoverService.getFailoverItems(jobInstanceId);// TODO: 2020/8/4 获取正在执行的分片项
+                List<Integer> failoverItems = failoverService.getFailoverItems(jobInstanceId);
                 if (!failoverItems.isEmpty()) {
                     //  /sharding/{shardingItem}/failover (EPHEMERAL) 是临时节点 既然jobInstanceId作业实例会话失效了那么该临时节点也会被自动删除
                     // 所以这个处理没有太多意义 failoverItems 一定会为空
@@ -113,6 +113,7 @@ public final class FailoverListenerManager extends AbstractListenerManager {
                         failoverService.failoverIfNecessary();
                     }
                 } else {
+                    // 提供一种策略 不重复执行  // TODO: 2020/8/4 获取正在执行的分片项
                     for (int each : shardingService.getShardingItems(jobInstanceId)) {
                         failoverService.setCrashedFailoverFlag(each);
                         failoverService.failoverIfNecessary();

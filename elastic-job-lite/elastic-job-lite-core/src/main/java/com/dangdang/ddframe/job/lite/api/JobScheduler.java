@@ -126,9 +126,11 @@ public class JobScheduler {
         result.getJobDataMap().put(JOB_FACADE_DATA_MAP_KEY, jobFacade);
         Optional<ElasticJob> elasticJobInstance = createElasticJobInstance();
         if (elasticJobInstance.isPresent()) {
+            // TODO: 2020/8/26  基于spring 创建job实例
             result.getJobDataMap().put(ELASTIC_JOB_DATA_MAP_KEY, elasticJobInstance.get());
         } else if (!jobClass.equals(ScriptJob.class.getCanonicalName())) {
             try {
+                // 直接实例构造器创建
                 result.getJobDataMap().put(ELASTIC_JOB_DATA_MAP_KEY, Class.forName(jobClass).newInstance());
             } catch (final ReflectiveOperationException ex) {
                 throw new JobConfigurationException("Elastic-Job: Job class '%s' can not initialize.", jobClass);

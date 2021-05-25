@@ -1,4 +1,36 @@
 
+
+####
+quartz -> 一个分片一个task放入elasticjob自定义线程(默认DefaultExecutorServiceHandler无界阻塞队列)，阻塞队列设置为分片总大小 —> 每个分片多线程处理 
+
+
+### 架构
+
+### 核心
+
+#### 流程图
+
+#### elastic-job失效转移
+- 配置属性failover
+    - 是否开启任务执行失效转移，开启表示如果作业在一次任务执行中途宕机，允许将该次未完成的任务在另一作业节点上补偿执行
+    
+- 实现
+
+#### resharding
+
+
+### zookeeper相关知识点
+
+#### TreeCache
+
+#### LeaderLatch
+
+
+
+
+
+
+
 ### quartz
 - Scheduler(实现类StdScheduler)
 - JobDetail(实现类JobDetailImpl)

@@ -19,14 +19,9 @@ package com.dangdang.ddframe.job.lite.internal.schedule;
 
 import com.dangdang.ddframe.job.exception.JobSystemException;
 import lombok.RequiredArgsConstructor;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import org.quartz.*;
+
+import java.util.Date;
 
 /**
  * 作业调度控制器.
@@ -43,6 +38,7 @@ public final class JobScheduleController {
     private final String triggerIdentity; // jobName
     
     /**
+     * @see Scheduler#scheduleJob(JobDetail, Trigger) 
      * 调度作业.
      * 
      * @param cron CRON表达式
@@ -57,7 +53,11 @@ public final class JobScheduleController {
             throw new JobSystemException(ex);
         }
     }
-    
+    private SimpleTrigger createSimpleTrigger(final String cron) {
+        String[] arr = cron.split(";");
+        return TriggerBuilder.newTrigger().startAt(new Date(Long.parseLong(arr[0]))).withIdentity(triggerIdentity).withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMilliseconds(Long.parseLong(arr[1])).repeatForever().withMisfireHandlingInstructionNowWithExistingCount()).build();
+    }
+
     /**
      * 重新调度作业.
      * 

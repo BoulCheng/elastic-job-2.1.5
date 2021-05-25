@@ -61,6 +61,7 @@ public final class ExecutionContextService {
     public ShardingContexts getJobShardingContext(final List<Integer> shardingItems) {
         LiteJobConfiguration liteJobConfig = configService.load(false);
         // 如果monitorExecution为true即监控执行 则shardingItems过滤正在执行的分片项集合 /sharding/{shardingItem}/running
+        // TODO: 2020/8/7  这里会导致问题  如果移除了/sharding/{shardingItem}/running 正在执行的分片项 monitorExecution， 那么misfire有不生效
         removeRunningIfMonitorExecution(liteJobConfig.isMonitorExecution(), shardingItems);
         if (shardingItems.isEmpty()) {
             return new ShardingContexts(buildTaskId(liteJobConfig, shardingItems), liteJobConfig.getJobName(), liteJobConfig.getTypeConfig().getCoreConfig().getShardingTotalCount(), 
